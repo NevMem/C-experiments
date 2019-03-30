@@ -28,16 +28,20 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 	char buffer[10];
 
 	sprintf(buffer, "%d", second_pid);
-	fprintf(stderr, "Second child pid: %d and it's len is: %d", second_pid, strlen(buffer));
+	fprintf(stderr, "Second child pid: %d and it's len is: %d\n", second_pid, strlen(buffer));
 	write(first_child_pipe[1], buffer, strlen(buffer));
 	close(first_child_pipe[1]);
 
 	sprintf(buffer, "%d", first_pid);
-	fprintf(stderr, "First child pid: %d and it's len is: %d", first_pid, strlen(buffer));
+	fprintf(stderr, "First child pid: %d and it's len is: %d\n", first_pid, strlen(buffer));
 	write(second_child_pipe[1], buffer, strlen(buffer));
 	close(second_child_pipe[1]);
+
+	int iters = 0;
 	
 	while (1) {
+		++iters;
+		if (iters == 100000000) break;
 		if (parent_event_checker == -1) continue;
 		int cur = parent_event_checker;
 		if (cur == 0) {
