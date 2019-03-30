@@ -97,6 +97,7 @@ void proc_first(int* pipe) {
 	fprintf(stderr, "First child listener was successfully set\n");
 	fprintf(stderr, "Sending SIGINT to brother of first\n");
 	kill(first_brother, SIGINT);
+	sleep(1);
 	while (1) {}
 }
 
@@ -119,6 +120,7 @@ void proc_second(int* pipe) {
 	second_brother = brother;
 	signal(SIGINT, second_listener);
 	fprintf(stderr, "Second child listener was successfully set\n");
+	sleep(1);
 	while (1) {}
 }
 
