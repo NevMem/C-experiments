@@ -23,6 +23,8 @@ void register_parent_listener() {
 void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, int second_pid) {
 	register_parent_listener();
 
+	fprintf(stderr, "Parent listener was successfully registered\n");
+
 	fprintf(first_child_pipe[1], "%d", second_pid);
 	close(first_child_pipe[1]);
 	fprintf(second_child_pipe[1], "%d", first_pid);
@@ -44,15 +46,19 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 	}
 }
 
+int readOneInt(int* in) {
+	char buffer[20];
+	read(in, buffer);
+	return stoi(buffer);
+}
+
 void proc_first(int* pipe) {
-	int brother;
-	fscanf(pipe[0], "%d", &brother);
+	int brother = readOneInt(pipe[0]);
 	fprintf(stderr, "Brother of first child has pid: %d", brother);
 }
 
 void proc_second(int* pipe) {
-	int brother;
-	fscanf(pipe[0], "%d", &brother);
+	int brother = readOneInt(pipe[0]);
 	fprintf(stderr, "Brother of second child has pid: %d", brother);
 }
 
@@ -71,6 +77,7 @@ int main() {
 	pipe(second_pipe);
 
 	pid_t parent = getpid();
+	fprintf("Parent pid: %d\n", parent);
 	pid_t first_child = fork(), second_child;
 	if (first_child > 0) {
 		// Parent
@@ -81,7 +88,7 @@ int main() {
 			exit(1);
 		} else if (second_child > 0) {
 			// Parent
-			fprintf(stderr, "Children were successfully created (pids: %d %d)", first_child, second_child);
+			fprintf(stderr, "Children were successfully created (pids: %d %d)\n", first_child, second_child);
 			proc_parent(first_pipe, first_child, second_pipe, second_child);
 		} else {
 			// Second child
