@@ -20,6 +20,11 @@ void register_parent_listener() {
 	signal(SIGRTMAX, parent_listener_sigrtmax);	
 }
 
+/* Globals */ // FIXME:(bad code style)
+size_t n, m;
+FILE* out;
+pid_t parent;
+
 void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, int second_pid) {
 	register_parent_listener();
 
@@ -58,10 +63,6 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 		parent_event_checker = -1;
 	}
 }
-
-size_t n, m;
-FILE* out;
-pid_t parent;
 
 int readOneInt(int* in) {
 	char buffer[20];
@@ -110,7 +111,6 @@ void proc_second(int* pipe) {
 	second_brother = brother;
 	signal(SIGRTMIN, second_listener);
 }
-
 
 int main() {
 	printf("Start to perform our job\n");
