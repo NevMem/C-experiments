@@ -48,7 +48,7 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 		++iters;
 		if (parent_event_checker == -1) continue;
 		int cur = parent_event_checker;
-		if (cur == 0) {
+		if (cur == 0 && counter == m) {
 			fprintf(stderr, "Processing SIGINT request\n");
 			fprintf(stderr, "Closing file by parent thread\n");
 			fclose(out);
