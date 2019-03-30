@@ -83,7 +83,7 @@ void first_listener(int sig) {
 		kill(parent, SIGRTMIN);
 		exit(0);
 	}
-	kill(second_brother, SIGRTMIN);
+	kill(first_brother, SIGRTMIN);
 }
 
 void proc_first(int* pipe) {
