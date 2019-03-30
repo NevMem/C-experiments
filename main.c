@@ -82,7 +82,7 @@ void first_listener(int sig) {
 	fflush(out);
 	free(buffer);
 	counter++;
-	if (counter == m) {
+	if (counter == n) {
 		kill(parent, SIGINT);
 		exit(0);
 	}
