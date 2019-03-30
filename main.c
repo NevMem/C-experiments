@@ -79,7 +79,7 @@ void first_listener(int sig) {
 		buffer[i] = 'A';
 	buffer[m] = '\0';
 	fprintf(out, "%s", buffer);
-	fflush(out);
+	// fflush(out);
 	free(buffer);
 	counter++;
 	if (counter == n) {
@@ -108,7 +108,7 @@ void second_listener(int sig) {
 		buffer[i] = 'B';
 	buffer[m] = '\0';
 	fprintf(out, "%s", buffer);
-	fflush(out);
+	// fflush(out);
 	free(buffer);
 	kill(second_brother, SIGINT);
 }
