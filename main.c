@@ -33,12 +33,12 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 	char buffer[10];
 
 	sprintf(buffer, "%d", second_pid);
-	fprintf(stderr, "Second child pid: %d and it's len is: %d\n", second_pid, strlen(buffer));
+	fprintf(stderr, "Second child pid: %d", second_pid);
 	write(first_child_pipe[1], buffer, strlen(buffer));
 	close(first_child_pipe[1]);
 
 	sprintf(buffer, "%d", first_pid);
-	fprintf(stderr, "First child pid: %d and it's len is: %d\n", first_pid, strlen(buffer));
+	fprintf(stderr, "First child pid: %d", first_pid);
 	write(second_child_pipe[1], buffer, strlen(buffer));
 	close(second_child_pipe[1]);
 
@@ -46,7 +46,7 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 	
 	while (1) {
 		++iters;
-		if (iters == 100000000) break;
+		// if (iters == 1000000000) break;
 		if (parent_event_checker == -1) continue;
 		int cur = parent_event_checker;
 		if (cur == 0) {
@@ -96,6 +96,7 @@ void proc_first(int* pipe) {
 	fprintf(stderr, "First child listener was successfully set\n");
 	fprintf(stderr, "Sending SIGINT to brother of first\n");
 	kill(first_brother, SIGINT);
+	while (1) {}
 }
 
 int second_brother = 0;
@@ -115,6 +116,7 @@ void proc_second(int* pipe) {
 	second_brother = brother;
 	signal(SIGINT, second_listener);
 	fprintf(stderr, "Second child listener was successfully set\n");
+	while (1) {}
 }
 
 int main() {
