@@ -5,8 +5,8 @@
 
 int parent_event_checker = -1;
 
-void parent_listener_sigrtmin(int sig) {
-	fprintf(stderr, "Parent received SIGRTMIN request\n");
+void parent_listener_SIGINT(int sig) {
+	fprintf(stderr, "Parent received SIGINT request\n");
 	parent_event_checker = 0;
 }
 
@@ -16,8 +16,8 @@ void parent_listener_sigrtmax(int sig) {
 }
 
 void register_parent_listener() {
-	signal(SIGRTMIN, parent_listener_sigrtmin);
-	signal(SIGRTMAX, parent_listener_sigrtmax);	
+	signal(SIGINT, parent_listener_SIGINT);
+	// signal(SIGRTMAX, parent_listener_sigrtmax);	
 }
 
 /* Globals */ // FIXME:(bad code style)
@@ -50,7 +50,7 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 		if (parent_event_checker == -1) continue;
 		int cur = parent_event_checker;
 		if (cur == 0) {
-			fprintf(stderr, "Processing SIGRTMIN request\n");
+			fprintf(stderr, "Processing SIGINT request\n");
 			fprintf(stderr, "Closing file by parent thread\n");
 			fclose(out);
 			break;
@@ -82,20 +82,20 @@ void first_listener(int sig) {
 	fprintf(out, "%s", buffer);
 	counter++;
 	if (counter == m) {
-		kill(parent, SIGRTMIN);
+		kill(parent, SIGINT);
 		exit(0);
 	}
-	kill(first_brother, SIGRTMIN);
+	kill(first_brother, SIGINT);
 }
 
 void proc_first(int* pipe) {
 	int brother = readOneInt(pipe[0]);
 	fprintf(stderr, "Brother of first child has pid: %d\n", brother);
 	first_brother = brother;
-	signal(SIGRTMIN, first_listener);
+	signal(SIGINT, first_listener);
 	fprintf(stderr, "First child listener was successfully set\n");
-	fprintf(stderr, "Sending SIGRTMIN to brother of first\n");
-	kill(first_brother, SIGRTMIN);
+	fprintf(stderr, "Sending SIGINT to brother of first\n");
+	kill(first_brother, SIGINT);
 }
 
 int second_brother = 0;
@@ -106,14 +106,14 @@ void second_listener(int sig) {
 		buffer[i] = 'A';
 	buffer[m] = '\0';
 	fprintf(out, "%s", buffer);
-	kill(second_brother, SIGRTMIN);
+	kill(second_brother, SIGINT);
 }
 
 void proc_second(int* pipe) {
 	int brother = readOneInt(pipe[0]);
 	fprintf(stderr, "Brother of second child has pid: %d\n", brother);
 	second_brother = brother;
-	signal(SIGRTMIN, second_listener);
+	signal(SIGINT, second_listener);
 	fprintf(stderr, "Second child listener was successfully set\n");
 }
 
