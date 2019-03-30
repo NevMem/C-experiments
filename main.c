@@ -46,7 +46,9 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 		int cur = parent_event_checker;
 		if (cur == 0) {
 			fprintf(stderr, "Processing SIGRTMIN request\n");
-
+			fprintf(stderr, "Closing file by parent thread\n");
+			fclose(out);
+			break;
 		} else if (cur == 1) {
 			fprintf(stderr, "Processing SIGRTMAX request\n");
 
@@ -57,37 +59,71 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 	}
 }
 
+size_t n, m;
+FILE* out;
+pid_t parent;
+
 int readOneInt(int* in) {
 	char buffer[20];
 	read(in, buffer, 20);
 	return atoi(buffer);
 }
 
+int counter = 0;
+
+int first_brother = 0;
+void first_listener(int sig) {
+	char* buffer = malloc(m + 1);
+	for (size_t i = 0; i != m; ++i)
+		buffer[i] = 'A';
+	buffer[m] = '\0';
+	fprintf(out, "%s", buffer);
+	counter++;
+	if (counter == m) {
+		kill(parent, SIGRTMIN);
+		exit(0);
+	}
+	kill(second_brother, SIGRTMIN);
+}
+
 void proc_first(int* pipe) {
 	int brother = readOneInt(pipe[0]);
-	fprintf(stderr, "Brother of first child has pid: %d", brother);
+	fprintf(stderr, "Brother of first child has pid: %d\n", brother);
+	first_brother = brother;
+	signal(SIGRTMIN, first_listener);
+	kill(first_brother, SIGRTMIN);
+}
+
+int second_brother = 0;
+void second_listener(int sig) {
+	char* buffer = malloc(m + 1);
+	for (size_t i = 0; i != m; ++i)
+		buffer[i] = 'A';
+	buffer[m] = '\0';
+	fprintf(out, "%s", buffer);
+	kill(second_brother, SIGRTMIN);
 }
 
 void proc_second(int* pipe) {
 	int brother = readOneInt(pipe[0]);
-	fprintf(stderr, "Brother of second child has pid: %d", brother);
+	fprintf(stderr, "Brother of second child has pid: %d\n", brother);
+	second_brother = brother;
+	signal(SIGRTMIN, second_listener);
 }
 
-FILE* out;
 
 int main() {
 	printf("Start to perform our job\n");
 
 	out = fopen("output.txt", "w");
 
-	size_t n, m;
 	scanf("%lld %lld", &n, &m);
 
 	int first_pipe[2], second_pipe[2];
 	pipe(first_pipe);
 	pipe(second_pipe);
 
-	pid_t parent = getpid();
+	parent = getpid();
 	fprintf("Parent pid: %d\n", parent);
 	pid_t first_child = fork(), second_child;
 	if (first_child > 0) {
