@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 
 int parent_event_checker = -1;
 
@@ -45,11 +46,12 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 
 	int iters = 0;
 	
+	sleep(1);
 	while (1) {
 		++iters;
 		if (parent_event_checker == -1) continue;
 		int cur = parent_event_checker;
-		if (cur == 0 && counter == m) {
+		if (cur == 0) {
 			fprintf(stderr, "Processing SIGINT request\n");
 			fprintf(stderr, "Closing file by parent thread\n");
 			fclose(out);
