@@ -74,6 +74,7 @@ int counter = 0;
 
 int first_brother = 0;
 void first_listener(int sig) {
+	fprintf(stderr, "First child listner was called\n");
 	char* buffer = malloc(m + 1);
 	for (size_t i = 0; i != m; ++i)
 		buffer[i] = 'A';
@@ -99,6 +100,7 @@ void proc_first(int* pipe) {
 
 int second_brother = 0;
 void second_listener(int sig) {
+	fprintf(stderr, "Second child listner was called\n");
 	char* buffer = malloc(m + 1);
 	for (size_t i = 0; i != m; ++i)
 		buffer[i] = 'A';
@@ -112,7 +114,7 @@ void proc_second(int* pipe) {
 	fprintf(stderr, "Brother of second child has pid: %d\n", brother);
 	second_brother = brother;
 	signal(SIGRTMIN, second_listener);
-	fprintf(stderr, "Signal child listener was successfully set\n");
+	fprintf(stderr, "Second child listener was successfully set\n");
 }
 
 int main() {
