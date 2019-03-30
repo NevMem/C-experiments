@@ -92,6 +92,8 @@ void proc_first(int* pipe) {
 	fprintf(stderr, "Brother of first child has pid: %d\n", brother);
 	first_brother = brother;
 	signal(SIGRTMIN, first_listener);
+	fprintf(stderr, "First child listener was successfully set\n");
+	fprintf(stderr, "Sending SIGRTMIN to brother of first\n");
 	kill(first_brother, SIGRTMIN);
 }
 
@@ -110,6 +112,7 @@ void proc_second(int* pipe) {
 	fprintf(stderr, "Brother of second child has pid: %d\n", brother);
 	second_brother = brother;
 	signal(SIGRTMIN, second_listener);
+	fprintf(stderr, "Signal child listener was successfully set\n");
 }
 
 int main() {
