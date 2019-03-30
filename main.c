@@ -49,7 +49,7 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 int readOneInt(int* in) {
 	char buffer[20];
 	read(in, buffer, 20);
-	return stoi(buffer);
+	return atoi(buffer);
 }
 
 void proc_first(int* pipe) {
