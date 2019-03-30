@@ -25,9 +25,16 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 
 	fprintf(stderr, "Parent listener was successfully registered\n");
 
-	fprintf(first_child_pipe[1], "%d", second_pid);
+	char buffer[10];
+
+	sprintf(buffer, "%d", second_pid);
+	fprintf(stderr, "Second child pid: %d and it's len is: %d", second_pid, strlen(buffer));
+	write(first_child_pipe[1], buffer, strlen(buffer));
 	close(first_child_pipe[1]);
-	fprintf(second_child_pipe[1], "%d", first_pid);
+
+	sprintf(buffer, "%d", first_pid);
+	fprintf(stderr, "First child pid: %d and it's len is: %d", first_pid, strlen(buffer));
+	write(second_child_pipe[1], buffer, strlen(buffer));
 	close(second_child_pipe[1]);
 	
 	while (1) {
