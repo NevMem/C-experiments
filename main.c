@@ -104,7 +104,7 @@ void second_listener(int sig) {
 	fprintf(stderr, "Second child listner was called\n");
 	char* buffer = malloc(m + 1);
 	for (size_t i = 0; i != m; ++i)
-		buffer[i] = 'A';
+		buffer[i] = 'B';
 	buffer[m] = '\0';
 	fprintf(out, "%s", buffer);
 	kill(second_brother, SIGINT);
