@@ -134,7 +134,7 @@ int main() {
 	pipe(second_pipe);
 
 	parent = getpid();
-	fprintf("Parent pid: %d\n", parent);
+	fprintf(stderr, "Parent pid: %d\n", parent);
 	pid_t first_child = fork(), second_child;
 	if (first_child > 0) {
 		// Parent
