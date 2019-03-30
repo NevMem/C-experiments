@@ -24,6 +24,7 @@ void register_parent_listener() {
 size_t n, m;
 FILE* out;
 pid_t parent;
+int counter = 0;
 
 void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, int second_pid) {
 	register_parent_listener();
@@ -68,8 +69,6 @@ int readOneInt(int* in) {
 	read(in, buffer, 20);
 	return atoi(buffer);
 }
-
-int counter = 0;
 
 int first_brother = 0;
 void first_listener(int sig) {
