@@ -33,12 +33,12 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 	char buffer[10];
 
 	sprintf(buffer, "%d", second_pid);
-	fprintf(stderr, "Second child pid: %d", second_pid);
+	fprintf(stderr, "Second child pid: %d\n", second_pid);
 	write(first_child_pipe[1], buffer, strlen(buffer));
 	close(first_child_pipe[1]);
 
 	sprintf(buffer, "%d", first_pid);
-	fprintf(stderr, "First child pid: %d", first_pid);
+	fprintf(stderr, "First child pid: %d\n", first_pid);
 	write(second_child_pipe[1], buffer, strlen(buffer));
 	close(second_child_pipe[1]);
 
@@ -46,7 +46,6 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 	
 	while (1) {
 		++iters;
-		// if (iters == 1000000000) break;
 		if (parent_event_checker == -1) continue;
 		int cur = parent_event_checker;
 		if (cur == 0) {
@@ -79,7 +78,9 @@ void first_listener(int sig) {
 	for (size_t i = 0; i != m; ++i)
 		buffer[i] = 'A';
 	buffer[m] = '\0';
-	fprintf(out, "%s", buffer);
+	fprintf(out, "%s\n", buffer);
+	fflush(out);
+	free(buffer);
 	counter++;
 	if (counter == m) {
 		kill(parent, SIGINT);
@@ -106,7 +107,9 @@ void second_listener(int sig) {
 	for (size_t i = 0; i != m; ++i)
 		buffer[i] = 'B';
 	buffer[m] = '\0';
-	fprintf(out, "%s", buffer);
+	fprintf(out, "%s\n", buffer);
+	fflush(out);
+	free(buffer);
 	kill(second_brother, SIGINT);
 }
 
