@@ -27,7 +27,7 @@ FILE* out;
 pid_t parent;
 int counter = 0;
 
-void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, int second_pid) {
+void proc_parent(int* first_child_pipe, int* first_out, int first_pid, int* second_child_pipe, int* second_out, int second_pid) {
 	register_parent_listener();
 
 	fprintf(stderr, "Parent listener was successfully registered\n");
@@ -43,6 +43,11 @@ void proc_parent(int* first_child_pipe, int first_pid, int* second_child_pipe, i
 	fprintf(stderr, "First child pid: %d\n", first_pid);
 	write(second_child_pipe[1], buffer, strlen(buffer));
 	close(second_child_pipe[1]);
+
+	read(first_out[0], buffer, 10);
+	fprintf(stderr, "Received %s from first child\n", buffer);
+	read(second_out[0], buffer, 10);
+	fprintf(stderr, "Received %s from second child\n", buffer);
 
 	int iters = 0;
 	
@@ -90,14 +95,19 @@ void first_listener(int sig) {
 	kill(first_brother, SIGINT);
 }
 
-void proc_first(int* pipe) {
+void proc_first(int* pipe, int* out_pipe) {
 	int brother = readOneInt(pipe[0]);
 	fprintf(stderr, "Brother of first child has pid: %d\n", brother);
 	first_brother = brother;
 	signal(SIGINT, first_listener);
 	fprintf(stderr, "First child listener was successfully set\n");
 	fprintf(stderr, "Sending SIGINT to brother of first\n");
-	kill(first_brother, SIGINT);
+	
+	write(out_pipe[1], "ready", 6);
+	close(out_pipe[1]);
+
+	fprintf(stderr, "Ready string was send from first child to parent through pipe\n");
+	
 	sleep(1);
 	while (1) {}
 }
@@ -115,12 +125,18 @@ void second_listener(int sig) {
 	kill(second_brother, SIGINT);
 }
 
-void proc_second(int* pipe) {
+void proc_second(int* pipe, int* out_pipe) {
 	int brother = readOneInt(pipe[0]);
 	fprintf(stderr, "Brother of second child has pid: %d\n", brother);
 	second_brother = brother;
 	signal(SIGINT, second_listener);
 	fprintf(stderr, "Second child listener was successfully set\n");
+
+	write(out_pipe[1], "ready", 6);
+	close(out_pipe[1]);
+
+	fprintf(stderr, "Ready string was send from second child to parent through pipe\n");
+
 	sleep(1);
 	while (1) {}
 }
@@ -132,9 +148,11 @@ int main() {
 
 	scanf("%lld %lld", &n, &m);
 
-	int first_pipe[2], second_pipe[2];
+	int first_pipe[2], second_pipe[2], first_out[2], second_out[2];
 	pipe(first_pipe);
 	pipe(second_pipe);
+	pipe(first_out);
+	pipe(second_out);
 
 	parent = getpid();
 	fprintf(stderr, "Parent pid: %d\n", parent);
@@ -149,7 +167,7 @@ int main() {
 		} else if (second_child > 0) {
 			// Parent
 			fprintf(stderr, "Children were successfully created (pids: %d %d)\n", first_child, second_child);
-			proc_parent(first_pipe, first_child, second_pipe, second_child);
+			proc_parent(first_pipe, first_out, first_child, second_pipe, second_out, second_child);
 		} else {
 			// Second child
 			fprintf(stderr, "Second child is ready to perform his job\n");
