@@ -49,6 +49,8 @@ void proc_parent(int* first_child_pipe, int* first_out, int first_pid, int* seco
 	amount = read(second_out[0], buffer, 10);
 	fprintf(stderr, "Received %s from second child(check: %d)\n", buffer, amount);
 
+	kill(second_pid, SIGINT);
+
 	int iters = 0;
 	
 	sleep(1);
