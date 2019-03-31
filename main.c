@@ -62,6 +62,16 @@ void proc_parent(int* first_child_pipe, int* first_out, int first_pid, int* seco
 			fprintf(stderr, "Processing SIGINT request\n");
 			fprintf(stderr, "Closing file by parent thread\n");
 			fclose(out);
+
+			FILE* file = fopen("output.txt", "r");
+			char* buffer = malloc(m * n + 1);
+			
+			fscanf(file, "%s", buffer);
+
+			printf("%s\n", buffer);
+
+			free(buffer);
+			
 			break;
 		} else if (cur == 1) {
 			fprintf(stderr, "Processing SIGRTMAX request\n");
