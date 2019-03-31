@@ -64,7 +64,7 @@ void proc_parent(int* first_child_pipe, int* first_out, int first_pid, int* seco
 			fclose(out);
 
 			FILE* file = fopen("output.txt", "r");
-			char* buffer = malloc(m * n + 1);
+			char* buffer = (char*) malloc(m * n + 1);
 			
 			fscanf(file, "%s", buffer);
 
@@ -83,7 +83,7 @@ void proc_parent(int* first_child_pipe, int* first_out, int first_pid, int* seco
 	}
 }
 
-int readOneInt(int* in) {
+int readOneInt(int in) {
 	char buffer[20];
 	read(in, buffer, 20);
 	return atoi(buffer);
@@ -92,7 +92,7 @@ int readOneInt(int* in) {
 int first_brother = 0;
 void first_listener(int sig) {
 	fprintf(stderr, "First child listener was called\n");
-	char* buffer = malloc(m + 1);
+	char* buffer = (char*) malloc(m + 1);
 	for (size_t i = 0; i != m; ++i)
 		buffer[i] = 'A';
 	buffer[m] = '\0';
@@ -129,7 +129,7 @@ void proc_first(int* pipe, int* out_pipe) {
 int second_brother = 0;
 void second_listener(int sig) {
 	fprintf(stderr, "Second child listner was called\n");
-	char* buffer = malloc(m + 1);
+	char* buffer = (char*) malloc(m + 1);
 	for (size_t i = 0; i != m; ++i)
 		buffer[i] = 'B';
 	buffer[m] = '\0';
@@ -162,7 +162,7 @@ int main() {
 
 	out = fopen("output.txt", "w");
 
-	scanf("%lld %lld", &n, &m);
+	scanf("%zu %zu", &n, &m);
 
 	int first_pipe[2], second_pipe[2], first_out[2], second_out[2];
 	pipe(first_pipe);
