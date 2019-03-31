@@ -44,10 +44,10 @@ void proc_parent(int* first_child_pipe, int* first_out, int first_pid, int* seco
 	write(second_child_pipe[1], buffer, strlen(buffer));
 	close(second_child_pipe[1]);
 
-	read(first_out[0], buffer, 10);
-	fprintf(stderr, "Received %s from first child\n", buffer);
-	read(second_out[0], buffer, 10);
-	fprintf(stderr, "Received %s from second child\n", buffer);
+	int amount = read(first_out[0], buffer, 10);
+	fprintf(stderr, "Received %s from first child(check: %d)\n", buffer, amount);
+	amount = read(second_out[0], buffer, 10);
+	fprintf(stderr, "Received %s from second child(check: %d)\n", buffer, amount);
 
 	int iters = 0;
 	
@@ -79,7 +79,7 @@ int readOneInt(int* in) {
 
 int first_brother = 0;
 void first_listener(int sig) {
-	fprintf(stderr, "First child listner was called\n");
+	fprintf(stderr, "First child listener was called\n");
 	char* buffer = malloc(m + 1);
 	for (size_t i = 0; i != m; ++i)
 		buffer[i] = 'A';
@@ -103,7 +103,9 @@ void proc_first(int* pipe, int* out_pipe) {
 	fprintf(stderr, "First child listener was successfully set\n");
 	fprintf(stderr, "Sending SIGINT to brother of first\n");
 	
-	write(out_pipe[1], "ready", 6);
+	fprintf(stderr, "Sending ready string from first child to parent\n");
+
+	write(out_pipe[1], "ready#1", 8);
 	close(out_pipe[1]);
 
 	fprintf(stderr, "Ready string was send from first child to parent through pipe\n");
@@ -132,7 +134,9 @@ void proc_second(int* pipe, int* out_pipe) {
 	signal(SIGINT, second_listener);
 	fprintf(stderr, "Second child listener was successfully set\n");
 
-	write(out_pipe[1], "ready", 6);
+	fprintf(stderr, "Sending ready string from second child to parent\n");
+
+	write(out_pipe[1], "ready#2", 8);
 	close(out_pipe[1]);
 
 	fprintf(stderr, "Ready string was send from second child to parent through pipe\n");
