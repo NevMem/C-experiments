@@ -171,12 +171,12 @@ int main() {
 		} else {
 			// Second child
 			fprintf(stderr, "Second child is ready to perform his job\n");
-			proc_second(second_pipe);
+			proc_second(second_pipe, second_out);
 		}
 	} else if (first_child == 0) {
 		// First child
 		fprintf(stderr, "First child is ready to perform his job\n");
-		proc_first(first_pipe);
+		proc_first(first_pipe, first_out);
 	} else {
 		fprintf(stderr, "Error coccured while forking first child\n");
 	}
